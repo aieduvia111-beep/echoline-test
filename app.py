@@ -231,49 +231,111 @@ DASHBOARD_PAGE = """
 <meta charset="UTF-8">
 <title>EchoLine - panel</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   *{box-sizing:border-box;margin:0;padding:0;}
-  body{font-family:'Inter',sans-serif;background:#fafafa;color:#111;padding:40px;}
-  .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:32px;max-width:800px;}
-  h1{font-size:22px;font-weight:700;}
-  .user{color:#888;font-size:14px;}
-  a.logout{color:#888;font-size:13px;text-decoration:underline;}
-  .card{background:#fff;border:1px solid #eee;border-radius:16px;padding:28px;margin-bottom:20px;max-width:800px;box-shadow:0 2px 12px rgba(0,0,0,0.03);}
-  .card h3{font-size:15px;font-weight:600;margin-bottom:16px;}
-  textarea{width:100%;padding:12px;border-radius:10px;border:1px solid #ddd;font-family:inherit;font-size:14px;min-height:90px;}
-  button{padding:10px 20px;border-radius:10px;border:none;background:#111;color:#fff;font-weight:600;font-size:14px;cursor:pointer;margin-top:12px;}
-  button:hover{background:#333;}
+  body{font-family:'Inter',sans-serif;background:#fff;color:#111;display:flex;min-height:100vh;}
+
+  /* SIDEBAR */
+  .sidebar{width:230px;flex-shrink:0;border-right:1px solid #eee;padding:20px 14px;display:flex;flex-direction:column;}
+  .logo{font-size:15px;font-weight:800;padding:8px 8px 20px;letter-spacing:-0.01em;}
+  .nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;font-size:13.5px;font-weight:500;color:#555;text-decoration:none;margin-bottom:2px;cursor:pointer;}
+  .nav-item:hover{background:#f5f5f5;}
+  .nav-item.active{background:#111;color:#fff;}
+  .nav-icon{width:16px;height:16px;flex-shrink:0;}
+  .nav-section-label{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:#bbb;padding:16px 10px 6px;}
+
+  /* TOPBAR */
+  .main{flex:1;display:flex;flex-direction:column;}
+  .topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 32px;border-bottom:1px solid #eee;}
+  .topbar h2{font-size:15px;font-weight:600;}
+  .topbar-right{display:flex;align-items:center;gap:14px;}
+  .avatar{width:30px;height:30px;border-radius:50%;background:#111;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;}
+  a.logout{color:#888;font-size:13px;text-decoration:none;}
+  a.logout:hover{text-decoration:underline;}
+
+  .content{padding:32px;max-width:900px;}
+  .content h1{font-size:22px;font-weight:800;letter-spacing:-0.01em;margin-bottom:24px;}
+
+  /* ACTION CARDS */
+  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:32px;}
+  .action-card{border:1px solid #eee;border-radius:14px;padding:20px;cursor:pointer;transition:border-color .15s;}
+  .action-card:hover{border-color:#ccc;}
+  .action-card .icon-box{width:100%;height:70px;background:#fafafa;border-radius:10px;margin-bottom:14px;display:flex;align-items:center;justify-content:center;font-size:26px;}
+  .action-card h3{font-size:14px;font-weight:700;margin-bottom:4px;}
+  .action-card p{font-size:12.5px;color:#888;line-height:1.4;}
+
+  /* CARD (form/table containers) */
+  .card{background:#fff;border:1px solid #eee;border-radius:14px;padding:24px;margin-bottom:20px;}
+  .card h3{font-size:14px;font-weight:700;margin-bottom:14px;}
+  textarea{width:100%;padding:12px;border-radius:9px;border:1px solid #ddd;font-family:inherit;font-size:14px;min-height:90px;}
+  button.save{padding:9px 18px;border-radius:9px;border:none;background:#111;color:#fff;font-weight:600;font-size:13.5px;cursor:pointer;margin-top:10px;}
+  button.save:hover{background:#333;}
   table{width:100%;border-collapse:collapse;}
-  td,th{padding:10px 6px;border-bottom:1px solid #f0f0f0;text-align:left;font-size:13.5px;}
-  th{color:#999;font-weight:600;text-transform:uppercase;font-size:11px;letter-spacing:0.04em;}
+  td,th{padding:10px 6px;border-bottom:1px solid #f0f0f0;text-align:left;font-size:13px;}
+  th{color:#999;font-weight:600;text-transform:uppercase;font-size:10.5px;letter-spacing:0.04em;}
 </style>
 </head>
 <body>
-<div class="topbar">
-  <h1>Panel EchoLine</h1>
-  <div>
-    <span class="user">{{ user_email }}</span> ·
-    <a class="logout" href="/logout">Wyloguj</a>
+
+<div class="sidebar">
+  <div class="logo">● EchoLine</div>
+  <div class="nav-item active">🏠 Dashboard</div>
+  <div class="nav-item">📞 Numer telefonu</div>
+  <div class="nav-item">🎙️ Mój głos</div>
+  <div class="nav-item">💬 Rozmowy</div>
+  <div class="nav-section-label">Konto</div>
+  <div class="nav-item">⚙️ Ustawienia</div>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <h2>Dashboard</h2>
+    <div class="topbar-right">
+      <a class="logout" href="/logout">Wyloguj</a>
+      <div class="avatar">{{ user_email[0]|upper if user_email else "U" }}</div>
+    </div>
   </div>
-</div>
 
-<div class="card">
-  <h3>Instrukcje dla bota</h3>
-  <form method="POST" action="/save-instructions">
-    <textarea name="instructions">{{ instructions }}</textarea>
-    <button type="submit">Zapisz</button>
-  </form>
-</div>
+  <div class="content">
+    <h1>Co chcesz dziś zrobić?</h1>
 
-<div class="card">
-  <h3>Ostatnie rozmowy</h3>
-  <table>
-    <tr><th>Data</th><th>Z kim</th><th>Podsumowanie</th></tr>
-    {% for call in calls %}
-    <tr><td>{{ call.data }}</td><td>{{ call.z_kim }}</td><td>{{ call.podsumowanie }}</td></tr>
-    {% endfor %}
-  </table>
+    <div class="cards">
+      <div class="action-card">
+        <div class="icon-box">📞</div>
+        <h3>Skonfiguruj numer</h3>
+        <p>Wybierz kraj i uzyskaj numer telefonu dla swojego asystenta</p>
+      </div>
+      <div class="action-card">
+        <div class="icon-box">🎙️</div>
+        <h3>Sklonuj swój głos</h3>
+        <p>Nagraj krótką próbkę, żeby bot mówił Twoim głosem</p>
+      </div>
+      <div class="action-card">
+        <div class="icon-box">💬</div>
+        <h3>Zobacz rozmowy</h3>
+        <p>Przeglądaj transkrypcje i podsumowania połączeń</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Instrukcje dla bota</h3>
+      <form method="POST" action="/save-instructions">
+        <textarea name="instructions">{{ instructions }}</textarea>
+        <button class="save" type="submit">Zapisz</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <h3>Ostatnie rozmowy</h3>
+      <table>
+        <tr><th>Data</th><th>Z kim</th><th>Podsumowanie</th></tr>
+        {% for call in calls %}
+        <tr><td>{{ call.data }}</td><td>{{ call.z_kim }}</td><td>{{ call.podsumowanie }}</td></tr>
+        {% endfor %}
+      </table>
+    </div>
+  </div>
 </div>
 </body>
 </html>
